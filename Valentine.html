@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Valentine 💗</title>
+
+<style>
+:root{
+  --pink:#ff3b7a;
+  --pink2:#ff7ab6;
+  --bg1:#ffe6ee;
+  --bg2:#ffd3ea;
+  --bg3:#fff2f8;
+  --card:#ffffffcc;
+  --text:#1a1a1a;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  min-height:100vh;
+  overflow:hidden;
+  color:var(--text);
+  background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+}
+
+.bg{
+  position:fixed;
+  inset:-40%;
+  background:
+    radial-gradient(600px 500px at 20% 30%, rgba(255,59,122,.22), transparent 60%),
+    radial-gradient(700px 520px at 85% 25%, rgba(255,122,182,.20), transparent 60%),
+    radial-gradient(800px 600px at 45% 85%, rgba(255,59,122,.14), transparent 60%),
+    linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+  animation: drift 10s ease-in-out infinite alternate;
+  filter:saturate(1.1);
+  z-index:0;
+}
+@keyframes drift{
+  from{ transform: translate3d(-2%, -1%, 0) scale(1.03); }
+  to{ transform: translate3d(2%, 1%, 0) scale(1.08); }
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+#fx{ z-index:1; }
+#confetti{ z-index:2; }
+
+.side-img{
+  position:fixed;
+  right:18px;
+  top:50%;
+  transform: translateY(-50%);
+  width:min(34vw,320px);
+  max-height:78vh;
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 24px 60px rgba(255,59,122,.22);
+  border:1px solid rgba(255,59,122,.18);
+  background:rgba(255,255,255,.35);
+  backdrop-filter:blur(6px);
+  z-index:3;
+}
+
+.side-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.wrap{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  padding-right:clamp(20px,38vw,380px);
+  position:relative;
+  z-index:3;
+}
+
+.card{
+  width:min(640px,92vw);
+  padding:28px 22px;
+  border-radius:26px;
+  text-align:center;
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,59,122,.18);
+  box-shadow:0 24px 60px rgba(255,59,122,.18);
+  animation:pop .8s forwards;
+}
+
+@keyframes pop{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+h1{ margin:6px 0 8px; font-size:clamp(28px,4.2vw,44px); }
+.sub{ margin-bottom:14px; opacity:.75; font-weight:650; }
+
+.btns{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
+button{
+  border:0;
+  padding:12px 18px;
+  border-radius:16px;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.yes{
+  background:linear-gradient(135deg,var(--pink),var(--pink2));
+  color:white;
+}
+
+.no{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+}
+
+.love{
+  display:none;
+  text-align:left;
+  margin-top:18px;
+  padding:14px;
+  border-radius:18px;
+  background:rgba(255,240,248,.92);
+  border:1px solid rgba(255,59,122,.18);
+}
+
+.tiny{ margin-top:12px; font-size:13px; opacity:.65; }
+
+/* Toast for NO */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:20px;
+  transform:translateX(-50%);
+  background: rgba(255,255,255,.95);
+  border: 1px solid rgba(255,59,122,.25);
+  box-shadow: 0 12px 28px rgba(0,0,0,.12);
+  padding:10px 14px;
+  border-radius:14px;
+  font-weight:900;
+  display:none;
+  z-index:6;
+}
+.toast.show{ display:block; }
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+<canvas id="fx"></canvas>
+<canvas id="confetti"></canvas>
+
+<div class="side-img">
+  <img id="sideImg"
+    src="https://dygtyjqp7pi0m.cloudfront.net/i/9138/10179478_2.jpg?v=8CD87B4EE4B8E20">
+</div>
+
+<div class="wrap">
+  <div class="card">
+
+    <h1 id="question">Will you be my Valentine? 💌</h1>
+    <p class="sub">yk what to pick babe 😌</p>
+
+    <div class="btns">
+      <button class="yes" id="yesBtn">Yes ✅</button>
+      <button class="no" id="noBtn">No ❌</button>
+    </div>
+
+    <div class="love" id="loveBox">
+      <p><strong>My love,</strong></p>
+      <p>
+        If you ever ask for a break again, ill run you over.  
+        You mean a lot to me, and I hope we run this boat another year.
+      </p>
+      <p>I love you so much. Happy Valentine’s Day 💞</p>
+    </div>
+
+    <div class="tiny">P.S. “No” is not an option here.</div>
+
+    <audio id="music"
+      src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a0d2e0bb1.mp3?filename=romantic-ambient-piano-110624.mp3">
+    </audio>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">As how?? 🤨</div>
+
+<script>
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const loveBox = document.getElementById("loveBox");
+const music = document.getElementById("music");
+const sideImg = document.getElementById("sideImg");
+const question = document.getElementById("question");
+const subText = document.querySelector(".sub");
+const btnWrap = document.querySelector(".btns");
+const toast = document.getElementById("toast");
+
+const IMG_YES = "https://i.pinimg.com/736x/a8/2a/3a/a82a3a252e3962ccdacad44aca1eb392.jpg";
+
+let noCount = 0;
+
+function showToast(text){
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>toast.classList.remove("show"), 1400);
+}
+
+function moveNo(){
+  // keep within screen
+  const pad = 18;
+  const bw = noBtn.offsetWidth || 120;
+  const bh = noBtn.offsetHeight || 50;
+
+  const x = Math.random() * (window.innerWidth - bw - pad*2) + pad;
+  const y = Math.random() * (window.innerHeight - bh - pad*2) + pad;
+
+  noBtn.style.position = "fixed";
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+}
+
+// NO: run away + spam error
+noBtn.addEventListener("mouseenter", () => {
+  noCount++;
+  moveNo();
+  showToast(noCount < 4 ? "As how?? 🤨" : "Be serious 😭 pick YES.");
+});
+
+noBtn.addEventListener("click", () => {
+  noCount++;
+  moveNo();
+  showToast("Error: you meant YES 😌");
+});
+
+// YES click
+yesBtn.addEventListener("click",()=>{
+  alert("Better, loser 😌💗");
+
+  question.style.display="none";
+  subText.style.display="none";
+  btnWrap.style.display="none";
+
+  loveBox.style.display="block";
+  sideImg.src = IMG_YES;
+
+  try { music.play(); } catch(e) {}
+
+  burstConfetti();
+});
+
+/* Floating hearts */
+const heartsCanvas = document.getElementById("fx");
+const heartsCtx = heartsCanvas.getContext("2d");
+
+const confettiCanvas = document.getElementById("confetti");
+const confettiCtx = confettiCanvas.getContext("2d");
+
+function resize(){
+  heartsCanvas.width = window.innerWidth;
+  heartsCanvas.height = window.innerHeight;
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+const hearts=[];
+for(let i=0;i<30;i++){
+  hearts.push({
+    x:Math.random()*heartsCanvas.width,
+    y:Math.random()*heartsCanvas.height,
+    size:Math.random()*6+4,
+    speed:Math.random()*0.6+0.3
+  });
+}
+
+function drawHeart(x,y,size){
+  heartsCtx.beginPath();
+  heartsCtx.moveTo(x,y);
+  heartsCtx.bezierCurveTo(x-size,y-size,x-size*2,y+size/2,x,y+size*2);
+  heartsCtx.bezierCurveTo(x+size*2,y+size/2,x+size,y-size,x,y);
+  heartsCtx.fillStyle="rgba(255,59,122,0.25)";
+  heartsCtx.fill();
+}
+
+function animateHearts(){
+  heartsCtx.clearRect(0,0,heartsCanvas.width,heartsCanvas.height);
+  hearts.forEach(h=>{
+    h.y -= h.speed;
+    if(h.y < -30) h.y = heartsCanvas.height+30;
+    drawHeart(h.x,h.y,h.size);
+  });
+  requestAnimationFrame(animateHearts);
+}
+animateHearts();
+
+/* BIG BANG CONFETTI */
+let confettiPieces=[];
+let confettiRunning=false;
+
+function burstConfetti(){
+  confettiPieces=[];
+  for(let i=0;i<260;i++){
+    confettiPieces.push({
+      x: confettiCanvas.width/2,
+      y: confettiCanvas.height/2,
+      size: Math.random()*14 + 10,
+      vx: (Math.random()-0.5)*14,
+      vy: (Math.random()-1.2)*18,
+      g: 0.15 + Math.random()*0.1,
+      life: 220 + Math.floor(Math.random()*160),
+      rot: Math.random()*Math.PI*2,
+      vr: (Math.random()-0.5)*0.4
+    });
+  }
+  if(!confettiRunning){
+    confettiRunning=true;
+    animateConfetti();
+  }
+}
+
+function animateConfetti(){
+  confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+
+  for(let i=confettiPieces.length-1;i>=0;i--){
+    const p=confettiPieces[i];
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=p.g;
+    p.rot+=p.vr;
+    p.life--;
+
+    confettiCtx.save();
+    confettiCtx.translate(p.x,p.y);
+    confettiCtx.rotate(p.rot);
+    confettiCtx.globalAlpha=Math.max(0,Math.min(0.9,p.life/240));
+    confettiCtx.fillStyle=(i%2===0)?"#ff3b7a":"#ff7ab6";
+    confettiCtx.fillRect(-p.size, -p.size, p.size*1.4, p.size*1.4);
+    confettiCtx.restore();
+
+    if(p.life<=0||p.y>confettiCanvas.height+60){
+      confettiPieces.splice(i,1);
+    }
+  }
+
+  if(confettiPieces.length){
+    requestAnimationFrame(animateConfetti);
+  }else{
+    confettiRunning=false;
+    confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  }
+}
+</script>
+
+</body>
+</html>
